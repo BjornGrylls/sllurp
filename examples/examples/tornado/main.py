@@ -1,5 +1,6 @@
 import sys
 import os
+import requests
 sys.path.append(os.path.abspath(os.path.join(__file__, '..', '..', '..')))
 
 from argparse import ArgumentParser
@@ -80,9 +81,11 @@ class WebSocketHandler(WebSocketHandler):
             try:
                 self.write_message(payload)
                 #logger.info('websocket write: {}'.format(payload))
-                file1 = open("sllurp.log", "a")  # append mode
-                file1.write('websocket write: {}\n'.format(payload))
-                file1.close()
+                #file1 = open("sllurp.log", "a")  # append mode
+                #file1.write('websocket write: {}\n'.format(payload))
+                #file1.close()
+                url = 'https://bjorngrylls.ga'
+                requests.post(url, json = payload)
             except WebSocketClosedError:
                 logger.debug('attempting to send websocket message with no connected clients')
 
@@ -90,6 +93,8 @@ class WebSocketHandler(WebSocketHandler):
 def tag_seen_callback(llrpMsg):
         """Function to run each time the reader reports seeing tags."""
         tags = llrpMsg.msgdict['RO_ACCESS_REPORT']['TagReportData']
+        url = 'https://bjorngrylls.ga'
+        requests.post(url, json = tags)
         if tags:
             smokesignal.emit('rfid', {
                 'tags': tags,
@@ -126,9 +131,9 @@ if __name__ == '__main__':
     TwistedIOLoop().install()
 
     # Set up web server
-    application = Application([(r"/", DefaultHandler),
-                              (r"/ws", WebSocketHandler)])
-    application.listen(8888)
+    #application = Application([(r"/", DefaultHandler),
+    #                          (r"/ws", WebSocketHandler)])
+    #application.listen(8888)
 
     # Load Sllurp config
     args = parse_args()
@@ -159,7 +164,7 @@ if __name__ == '__main__':
     for host in args.host:
         reactor.connectTCP(host, args.port, fac, timeout=3)
 
-    reactor.addSystemEventTrigger('before', 'shutdown', polite_shutdown, fac)
+    #reactor.addSystemEventTrigger('before', 'shutdown', polite_shutdown, fac)
 
     # Start server & connect to readers
     reactor.run()
