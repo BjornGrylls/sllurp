@@ -1,6 +1,7 @@
 import sys
 import os
 import requests
+import json
 sys.path.append(os.path.abspath(os.path.join(__file__, '..', '..', '..')))
 
 from argparse import ArgumentParser
@@ -84,8 +85,10 @@ class WebSocketHandler(WebSocketHandler):
                 #file1 = open("sllurp.log", "a")  # append mode
                 #file1.write('websocket write: {}\n'.format(payload))
                 #file1.close()
-                url = 'https://bjorngrylls.ga'
-                requests.post(url, json = payload)
+                #url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
+                #x = requests.post(url, json = payload)
+		#print(x.text)
+		#print(payload)
             except WebSocketClosedError:
                 logger.debug('attempting to send websocket message with no connected clients')
 
@@ -93,13 +96,19 @@ class WebSocketHandler(WebSocketHandler):
 def tag_seen_callback(llrpMsg):
         """Function to run each time the reader reports seeing tags."""
         tags = llrpMsg.msgdict['RO_ACCESS_REPORT']['TagReportData']
-        url = 'https://bjorngrylls.ga'
-        requests.post(url, json = tags)
+        url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
+	headers = {'Content-type': 'application/json', 'Accept': '*/*'}
+	x = requests.post(url, data='"{}"'.format(tags), headers=headers)
+	print('Response:')
+	print(x.text)
+	print('Request:')
+	print("%s" %(tags))
+	print('"{}"'.format(tags))
+	print(' ')
         if tags:
             smokesignal.emit('rfid', {
                 'tags': tags,
-            })
-            
+		})
 
 
 def parse_args():
