@@ -97,7 +97,7 @@ def tag_seen_callback(llrpMsg):
         """Function to run each time the reader reports seeing tags."""
         tags = llrpMsg.msgdict['RO_ACCESS_REPORT']['TagReportData']
         url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
-	headers = {'Content-type': 'application/json', 'Accept': '*/*'}
+        headers = {'Content-type': 'application/json', 'Accept': '*/*'}
 	x = requests.post(url, data='"{}"'.format(tags), headers=headers)
 	print('Response:')
 	print(x.text)
