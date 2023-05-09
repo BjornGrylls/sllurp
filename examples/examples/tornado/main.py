@@ -81,34 +81,23 @@ class WebSocketHandler(WebSocketHandler):
         if self.connected_clients > 0:
             try:
                 self.write_message(payload)
-                #logger.info('websocket write: {}'.format(payload))
-                #file1 = open("sllurp.log", "a")  # append mode
-                #file1.write('websocket write: {}\n'.format(payload))
-                #file1.close()
-                #url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
-                #x = requests.post(url, json = payload)
-		#print(x.text)
-		#print(payload)
             except WebSocketClosedError:
                 logger.debug('attempting to send websocket message with no connected clients')
 
 
 def tag_seen_callback(llrpMsg):
-        """Function to run each time the reader reports seeing tags."""
-        tags = llrpMsg.msgdict['RO_ACCESS_REPORT']['TagReportData']
-        url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
-        headers = {'Content-type': 'application/json', 'Accept': '*/*'}
-	x = requests.post(url, data='"{}"'.format(tags), headers=headers)
-	print('Response:')
-	print(x.text)
-	print('Request:')
-	print("%s" %(tags))
-	print('"{}"'.format(tags))
-	print(' ')
-        if tags:
-            smokesignal.emit('rfid', {
-                'tags': tags,
-		})
+    """Function to run each time the reader reports seeing tags."""
+    tags = llrpMsg.msgdict['RO_ACCESS_REPORT']['TagReportData']
+    #for tag in tags:
+    #    tag.pop("ROSpecID", None)
+    url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
+    headers = {'Content-type': 'application/json', 'Accept': '*/*'}
+    x = requests.post(url, data='"{}"'.format(tags), headers=headers)
+    print('Response:')
+    print(x.text)
+    print('Request:')
+    print('"{}"'.format(tags))
+    print(' ')
 
 
 def parse_args():
@@ -157,16 +146,16 @@ if __name__ == '__main__':
                             start_inventory=True,
                             tari=args.tari,
                             tag_content_selector={
-                                'EnableROSpecID': True,
-                                'EnableSpecIndex': True,
-                                'EnableInventoryParameterSpecID': True,
-                                'EnableAntennaID': True,
-                                'EnableChannelIndex': True,
+                                'EnableROSpecID': False,
+                                'EnableSpecIndex': False,
+                                'EnableInventoryParameterSpecID': False,
+                                'EnableAntennaID': False,
+                                'EnableChannelIndex': False,
                                 'EnablePeakRSSI': True,
-                                'EnableFirstSeenTimestamp': True,
+                                'EnableFirstSeenTimestamp': False,
                                 'EnableLastSeenTimestamp': True,
                                 'EnableTagSeenCount': True,
-                                'EnableAccessSpecID': True,
+                                'EnableAccessSpecID': False,
                             })
     fac.addTagReportCallback(tag_seen_callback)
 
