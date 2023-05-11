@@ -3,7 +3,7 @@ import os
 import requests
 import json
 sys.path.append(os.path.abspath(os.path.join(__file__, '..', '..', '..')))
-
+from datetime import datetime
 from argparse import ArgumentParser
 from logging import getLogger, INFO, Formatter, StreamHandler, WARN
 from sllurp.llrp import LLRP_PORT, LLRPClientFactory
@@ -93,8 +93,8 @@ def tag_seen_callback(llrpMsg):
     url = 'https://rfidtrackingapi20230502171130.azurewebsites.net/api/TagPacket'
     headers = {'Content-type': 'application/json', 'Accept': '*/*'}
     x = requests.post(url, data='"{}"'.format(tags), headers=headers)
-    print('Response:')
-    print(x.text)
+    print(datetime.now())
+    #print(x.text)
     print('Request:')
     print('"{}"'.format(tags))
     print(' ')
@@ -153,8 +153,8 @@ if __name__ == '__main__':
                                 'EnableChannelIndex': False,
                                 'EnablePeakRSSI': True,
                                 'EnableFirstSeenTimestamp': False,
-                                'EnableLastSeenTimestamp': True,
-                                'EnableTagSeenCount': True,
+                                'EnableLastSeenTimestamp': False,
+                                'EnableTagSeenCount': False,
                                 'EnableAccessSpecID': False,
                             })
     fac.addTagReportCallback(tag_seen_callback)
